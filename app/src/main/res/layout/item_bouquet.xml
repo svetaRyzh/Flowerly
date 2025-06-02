@@ -49,6 +49,8 @@
                 android:text="В корзину"
                 android:textSize="12sp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:strokeColor="@color/main_green"
+                android:textColor="@color/main_green"
                 app:strokeWidth="1dp"/>
         </LinearLayout>
     </LinearLayout>

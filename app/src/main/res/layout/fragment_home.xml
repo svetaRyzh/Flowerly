@@ -47,14 +47,6 @@
             android:layout_marginBottom="8dp"
             android:textStyle="bold"/>
 
-        <!-- Рекомендации -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Рекомендуем вам"
-            android:textSize="16sp"
-            android:textColor="#666666"
-            android:layout_marginBottom="8dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recommendations_recycler"
