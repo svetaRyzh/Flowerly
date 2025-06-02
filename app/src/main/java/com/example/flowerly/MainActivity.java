@@ -45,21 +45,17 @@ public class MainActivity extends AppCompatActivity {
     private void setupNavigation() {
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
+            int id = item.getItemId();
 
-//            switch (item.getItemId()) {
-//                case R.id.nav_home:
-//                    selectedFragment = new HomeFragment();
-//                    break;
-//                case R.id.nav_catalog:
-//                    // selectedFragment = new CatalogFragment();
-//                    break;
-//                case R.id.nav_cart:
-//                    // selectedFragment = new CartFragment();
-//                    break;
-//                case R.id.nav_profile:
-//                    // selectedFragment = new ProfileFragment();
-//                    break;
-//            }
+            if (id == R.id.nav_home) {
+                selectedFragment = new HomeFragment();
+            } else if (id == R.id.nav_catalog) {
+                selectedFragment = new CatalogFragment();
+            } else if (id == R.id.nav_cart) {
+                selectedFragment = new CartFragment();
+            } else if (id == R.id.nav_profile) {
+                selectedFragment = new ProfileFragment();
+            }
 
             if (selectedFragment != null) {
                 loadFragment(selectedFragment);
@@ -78,5 +74,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
         transaction.commit();
+    }
+    public void navigateToLogin() {
+        bottomNav.setVisibility(View.GONE);
+        loadFragment(new EnterFragment());
     }
 }

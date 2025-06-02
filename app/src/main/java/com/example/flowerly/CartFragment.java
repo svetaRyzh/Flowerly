@@ -1,64 +1,103 @@
 package com.example.flowerly;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class CartFragment extends Fragment {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import com.google.android.material.snackbar.Snackbar;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+import java.util.Locale;
 
-    public CartFragment() {
-        // Required empty public constructor
-    }
+public class CartFragment extends Fragment implements CartAdapter.OnCartItemListener {
+    private RecyclerView cartRecycler;
+    private TextView totalPriceText;
+    private Button checkoutButton;
+    private CartAdapter adapter;
+    private TextView emptyCart;
+    private LinearLayout cartContent;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CartFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CartFragment newInstance(String param1, String param2) {
-        CartFragment fragment = new CartFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_cart, container, false);
+
+        cartRecycler = view.findViewById(R.id.cart_recycler);
+        totalPriceText = view.findViewById(R.id.total_price_text);
+        checkoutButton = view.findViewById(R.id.checkout_button);
+        emptyCart = view.findViewById(R.id.empty_cart_text);
+        cartContent = view.findViewById(R.id.cart_content);
+
+        setupRecyclerView();
+        updateTotalPrice();
+        checkIfCartEmpty(); // Проверяем состояние корзины при создании
+
+        checkoutButton.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Заказ оформлен!", Toast.LENGTH_SHORT).show();
+            Cart.getInstance().clearCart();
+            checkIfCartEmpty(); // Обновляем состояние после очистки
+        });
+
+        return view;
+    }
+
+    private void setupRecyclerView() {
+        cartRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new CartAdapter(Cart.getInstance().getItems(), this);
+        cartRecycler.setAdapter(adapter);
+    }
+
+    private void updateTotalPrice() {
+        int total = Cart.getInstance().getTotalPrice();
+        totalPriceText.setText(String.format(Locale.getDefault(),
+                "Итого: %,d ₽", total));
+    }
+
+    private void checkIfCartEmpty() {
+        if (Cart.getInstance().getItems().isEmpty()) {
+            showEmptyCart();
+        } else {
+            showCartContent();
         }
     }
 
+    private void showEmptyCart() {
+        emptyCart.setVisibility(View.VISIBLE);
+        cartContent.setVisibility(View.GONE);
+    }
+
+    private void showCartContent() {
+        emptyCart.setVisibility(View.GONE);
+        cartContent.setVisibility(View.VISIBLE);
+        updateCartItems();
+    }
+
+    private void updateCartItems() {
+        adapter = new CartAdapter(Cart.getInstance().getItems(), this);
+        cartRecycler.setAdapter(adapter);
+        updateTotalPrice();
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cart, container, false);
+    public void onResume() {
+        super.onResume();
+        checkIfCartEmpty();
+    }
+
+    @Override
+    public void onItemRemoved() {
+        checkIfCartEmpty();
     }
 }

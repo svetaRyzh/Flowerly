@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -62,14 +64,18 @@ public class BouquetAdapter extends RecyclerView.Adapter<BouquetAdapter.BouquetV
         }
 
         public void bind(Bouquet bouquet, OnBouquetClickListener listener) {
-            bouquetImage.setImageResource(bouquet.getImageRes());
+            Glide.with(itemView.getContext())
+                    .load(bouquet.getImageUrl())
+                    .placeholder(R.drawable.error_image)
+                    .error(R.drawable.error_image)      // Картинка при ошибке загрузки
+                    .into(bouquetImage);
             bouquetName.setText(bouquet.getName());
             bouquetPrice.setText(String.format(Locale.getDefault(), "%,d ₽", bouquet.getPrice()));
 
             itemView.setOnClickListener(v -> listener.onBouquetClick(bouquet));
 
             addToCart.setOnClickListener(v -> {
-                // Добавление в корзину
+                Cart.getInstance().addItem(bouquet);
                 Toast.makeText(itemView.getContext(),
                         "Добавлено в корзину: " + bouquet.getName(),
                         Toast.LENGTH_SHORT).show();

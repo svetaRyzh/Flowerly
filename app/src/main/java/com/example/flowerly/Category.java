@@ -2,7 +2,7 @@ package com.example.flowerly;
 
 public class Category {
     private String name;
-    private int imageRes; ;
+    private int imageRes;
 
     public Category(String name, int imageRes){
         this.name = name;

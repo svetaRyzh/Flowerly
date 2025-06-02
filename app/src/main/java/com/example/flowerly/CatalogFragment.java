@@ -2,63 +2,152 @@ package com.example.flowerly;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CatalogFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.google.android.material.slider.RangeSlider;
+import com.google.android.material.slider.Slider;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class CatalogFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public CatalogFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CatalogFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CatalogFragment newInstance(String param1, String param2) {
-        CatalogFragment fragment = new CatalogFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private RecyclerView catalogRecycler;
+    private BouquetAdapter adapter;
+    private List<Bouquet> allBouquets = new ArrayList<>();
+    private List<Bouquet> filteredBouquets = new ArrayList<>();
+    private RangeSlider priceSlider;
+    private TextView priceRangeText;
+    private TextView emptyStateText;
+    private float minPrice = 0;
+    private float maxPrice = 5000;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_catalog, container, false);
+        View view = inflater.inflate(R.layout.fragment_catalog, container, false);
+
+        // Инициализация элементов
+        catalogRecycler = view.findViewById(R.id.catalog_recycler);
+        priceSlider = view.findViewById(R.id.price_slider);
+        priceRangeText = view.findViewById(R.id.price_range_text);
+        emptyStateText = view.findViewById(R.id.empty_state_text);
+
+        // Настройка RecyclerView
+        catalogRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        adapter = new BouquetAdapter(filteredBouquets, this::onBouquetClick);
+        catalogRecycler.setAdapter(adapter);
+
+        // Загрузка данных и настройка фильтров
+        loadBouquets();
+        setupFilters(view);
+
+        return view;
+    }
+
+    private void onBouquetClick(Bouquet bouquet) {
+        Toast.makeText(getContext(), "Выбран: " + bouquet.getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadBouquets() {
+        allBouquets.clear();
+        allBouquets.addAll(JsonParser.parseBouquetsFromJson(requireContext()));
+        filteredBouquets.addAll(allBouquets);
+        if (filteredBouquets.isEmpty()) {
+            showEmptyState();
+        } else {
+            hideEmptyState();
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    private void setupFilters(View view) {
+        // Настройка спиннера категорий
+        Spinner categorySpinner = view.findViewById(R.id.category_spinner);
+
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.categories_array,
+                android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(spinnerAdapter);
+
+        // Настройка RangeSlider
+        priceSlider.setValueFrom(0);
+        priceSlider.setValueTo(5000);
+        priceSlider.setValues(minPrice, maxPrice);
+        updatePriceText(); // Инициализируем текст
+
+        priceSlider.addOnChangeListener((slider, value, fromUser) -> {
+            minPrice = slider.getValues().get(0);
+            maxPrice = slider.getValues().get(1);
+            updatePriceText();
+            applyFilters();
+        });
+
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilters();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    // Новый метод для обновления текста диапазона цен
+    private void updatePriceText() {
+        priceRangeText.setText(String.format(Locale.getDefault(),
+                "Цена: %d - %d ₽",
+                (int)minPrice, (int)maxPrice));
+    }
+
+    private void applyFilters() {
+        filteredBouquets.clear();
+
+        String selectedCategory = ((Spinner)getView().findViewById(R.id.category_spinner))
+                .getSelectedItem().toString();
+
+        for (Bouquet bouquet : allBouquets) {
+            boolean categoryMatches = selectedCategory.equals("Все") ||
+                    bouquet.getCategory().equals(selectedCategory);
+            boolean priceMatches = bouquet.getPrice() >= minPrice &&
+                    bouquet.getPrice() <= maxPrice;
+
+            if (categoryMatches && priceMatches) {
+                filteredBouquets.add(bouquet);
+            }
+        }
+        if (filteredBouquets.isEmpty()) {
+            showEmptyState();
+        } else {
+            hideEmptyState();
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
+    private void showEmptyState() {
+        catalogRecycler.setVisibility(View.GONE);
+        emptyStateText.setVisibility(View.VISIBLE);
+        emptyStateText.setText("По выбранным фильтрам цветов не найдено");
+    }
+
+    private void hideEmptyState() {
+        catalogRecycler.setVisibility(View.VISIBLE);
+        emptyStateText.setVisibility(View.GONE);
     }
 }

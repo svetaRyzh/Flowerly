@@ -3,12 +3,22 @@ package com.example.flowerly;
 public class Bouquet {
     private String name;
     private int price;
-    private int imageRes;
+    private String imageUrl;
+    private String category;
 
-    public Bouquet(String name, int price, int imageRes){
+    public Bouquet(String name, int price, String imageUrl, String category) {
         this.name = name;
-        this.imageRes = imageRes;
         this.price = price;
+        this.imageUrl = imageUrl;
+        this.category = category;
+    }
+
+    public String getCategory(){
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getName(){
@@ -17,8 +27,8 @@ public class Bouquet {
     public int getPrice(){
         return price;
     }
-    public int getImageRes(){
-        return imageRes;
+    public String getImageUrl(){
+        return imageUrl;
     }
 
     public void setName(String name){
@@ -27,8 +37,8 @@ public class Bouquet {
     public void setPrice(int price){
         this.price = price;
     }
-    public void setImageRes(int imageRes){
-        this.imageRes = imageRes;
+    public void setImageUrl(String imageUrl){
+        this.imageUrl = imageUrl;
     }
 }
 

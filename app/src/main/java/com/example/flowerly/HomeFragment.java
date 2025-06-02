@@ -56,24 +56,19 @@ public class HomeFragment extends Fragment {
             ImageView image = categoryView.findViewById(R.id.category_image);
             TextView name = categoryView.findViewById(R.id.category_name);
 
-            // Загружаем изображение вместо иконки
             image.setImageResource(category.getImageRes());
             name.setText(category.getName());
+
 
             categoriesContainer.addView(categoryView);
         }
     }
 
     private void loadRecommendations() {
-        // Заполняем список рекомендаций (можно из БД/API)
-        bouquets.add(new Bouquet("Романтический букет", 2500, R.drawable.bouquet1));
-        bouquets.add(new Bouquet("Весеннее настроение", 1800, R.drawable.bouquet2));
-        bouquets.add(new Bouquet("Классическая роза", 3200, R.drawable.bouquet3));
-        bouquets.add(new Bouquet("Полевые цветы", 2100, R.drawable.bouquet4));
+        bouquets.clear();
+        bouquets.addAll(JsonParser.parseBouquetsFromJson(requireContext()));
 
-        // Настраиваем RecyclerView
         BouquetAdapter adapter = new BouquetAdapter(bouquets, bouquet -> {
-            // Обработка клика по букету
             Toast.makeText(getContext(), "Выбран: " + bouquet.getName(), Toast.LENGTH_SHORT).show();
         });
 

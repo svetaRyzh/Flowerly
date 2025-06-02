@@ -38,7 +38,7 @@ public class EnterFragment extends Fragment {
                 Toast.makeText(getContext(), "Заполните все поля", Toast.LENGTH_SHORT).show();
             } else {
                 if (dbHelper.checkUser(email, password)) {
-                    saveLoginState(true);
+                    saveLoginState(true, email);
                     ((MainActivity) requireActivity()).navigateToHome();
                 } else {
                     Toast.makeText(getContext(), "Неверный email или пароль", Toast.LENGTH_SHORT).show();
@@ -62,10 +62,11 @@ public class EnterFragment extends Fragment {
         return view;
     }
 
-    private void saveLoginState(boolean isLoggedIn) {
+    private void saveLoginState(boolean isLoggedIn, String email) {
         SharedPreferences sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean("IS_LOGGED_IN", isLoggedIn);
+        editor.putString("USER_EMAIL", email);
         editor.apply();
     }
 
