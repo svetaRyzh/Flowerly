@@ -1,0 +1,46 @@
+{
+  "bouquets": [
+    {
+      "name": "Романтический букет",
+      "price": 2500,
+      "imageUrl": "https://i.pinimg.com/736x/99/ff/76/99ff76c67cf9fb747877940b82bffc9f.jpg",
+      "category": "Романтические"
+    },
+    {
+      "name": "Весеннее настроение",
+      "price": 1800,
+      "imageUrl": "https://i.pinimg.com/736x/9e/0d/bb/9e0dbbf8ee1cafcaec0325365d914c60.jpg",
+      "category": "Весенние"
+    },
+    {
+      "name": "Полевые цветы",
+      "price": 1500,
+      "imageUrl": "https://i.pinimg.com/736x/6c/4b/28/6c4b28961a413d8648c49b91f0a88f00.jpg",
+      "category": "Полевые"
+    },
+    {
+      "name": "Свадебный букет",
+      "price": 3000,
+      "imageUrl": "https://i.pinimg.com/736x/6e/89/1f/6e891ff232ac857f0ab322843ff355be.jpg",
+      "category": "Свадьба"
+    },
+    {
+      "name": "Классические розы",
+      "price": 2500,
+      "imageUrl": "https://i.pinimg.com/736x/de/fb/87/defb87db8ed9916ec07f90d0507fbfb1.jpg",
+      "category": "Классические"
+    },
+    {
+      "name": "Экзотический букет",
+      "price": 3000,
+      "imageUrl": "https://i.pinimg.com/736x/2e/22/e1/2e22e115c965fc3e90b8f498be733d00.jpg",
+      "category": "Экзотические"
+    },
+    {
+      "name": "Цветок в горшке",
+      "price": 3000,
+      "imageUrl": "https://i.pinimg.com/736x/72/8e/a2/728ea2a5a01db5bdf44c9383b461a65b.jpg",
+      "category": "Горшки"
+    }
+  ]
+}

@@ -1,3 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="categories_array">
+        <item>Все</item>
+        <item>Романтические</item>
+        <item>Свадьба</item>
+        <item>Весенние</item>
+        <item>Классические</item>
+        <item>Полевые</item>
+        <item>Экзотические</item>
+        <item>Горшки</item>
+        <item>Букеты</item>
+        <item>День рождения</item>
+        <item>Яркие</item>
+    </string-array>
+    <array name="initial_slider_values">
+        <item>0</item>
+        <item>5000</item>
+    </array>
+
 </resources>
